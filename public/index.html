@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebas</title>
+    <style>
+        :root {
+            --primary: #ffd600;
+            --primary-dark: #ffab00;
+            --bg: #181818;
+            --card-bg: #232323;
+            --text: #fff;
+            --accent: #ffd600;
+            --error: #ff5252;
+            --success: #00e676;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+        }
+        header {
+            background: var(--card-bg);
+            color: var(--primary);
+            padding: 28px 0 18px 0;
+            text-align: center;
+            font-size: 2.7rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            text-shadow: 0 2px 12px #000, 0 0 2px var(--primary-dark);
+        }
+        .main-content {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+        .upload-btn {
+            background: var(--primary);
+            color: #181818;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 24px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-bottom: 32px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #0002;
+            transition: background 0.2s, color 0.2s;
+        }
+        .upload-btn:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 36px 28px;
+            margin-top: 32px;
+        }
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 2px 8px #0005;
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .video-card:hover {
+            box-shadow: 0 4px 16px #ffd60055;
+            transform: translateY(-4px) scale(1.03);
+        }
+        .thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #333;
+            display: block;
+        }
+        .yt-duration {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.8);
+            color: #ffd600;
+            font-size: 0.95rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .video-info {
+            padding: 16px 18px 18px 18px;
+            display: flex;
+            gap: 14px;
+        }
+        .yt-channel {
+            width: 44px;
+            height: 44px;
+            background: #ffd600;
+            color: #181818;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px #0002;
+        }
+        .yt-meta {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .video-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0 0 6px 0;
+            color: var(--primary);
+            text-shadow: 0 1px 4px #000a;
+            line-height: 1.2;
+        }
+        .yt-channel-name {
+            font-size: 1rem;
+            color: #ffd600;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .yt-upload-date {
+            font-size: 0.95rem;
+            color: #bbb;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            color: var(--text);
+            padding: 32px 24px 24px 24px;
+            border-radius: 12px;
+            min-width: 320px;
+            max-width: 90vw;
+            box-shadow: 0 2px 16px #ffd60055;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            right: 18px;
+            top: 12px;
+            font-size: 1.5rem;
+            color: #888;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        input[type="text"], input[type="file"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            font-size: 1rem;
+            background: #222;
+            color: var(--text);
+        }
+        .modal-btn {
+            background: var(--primary);
+            color: #181818;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #0002;
+        }
+        .modal-btn:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+        #message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #263a00;
+            color: var(--success);
+        }
+        .error {
+            background-color: #3a1a1a;
+            color: var(--error);
+        }
+        /* Modern Login Page Styles - Darker Version */
+        .login-bg {
+            min-height: 100vh;
+            background: linear-gradient(120deg, #111 0%, #181818 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-bg::before {
+            content: '';
+            position: absolute;
+            top: -30%; left: -30%;
+            width: 160%; height: 160%;
+            background: radial-gradient(circle at 60% 40%, #ffd60033 0%, #111 80%);
+            filter: blur(80px);
+            z-index: 0;
+            animation: loginBgAnim 8s linear infinite alternate;
+        }
+        @keyframes loginBgAnim {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(8deg); }
+        }
+        @keyframes loginCardFloat {
+            0% { transform: translateY(0) scale(1); box-shadow: 0 8px 40px #000c, 0 2px 8px #ffd60022; }
+            50% { transform: translateY(-12px) scale(1.01); box-shadow: 0 16px 48px #000b, 0 4px 16px #ffd60033; }
+            100% { transform: translateY(0) scale(1); box-shadow: 0 8px 40px #000c, 0 2px 8px #ffd60022; }
+        }
+        .login-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(18, 18, 18, 0.92);
+            border-radius: 22px;
+            box-shadow: 0 8px 40px #000c, 0 2px 8px #ffd60022;
+            padding: 56px 40px 40px 40px;
+            min-width: 340px;
+            max-width: 95vw;
+            text-align: center;
+            backdrop-filter: blur(14px) saturate(1.1);
+            border: 1.5px solid #ffd60022;
+            animation: popin 0.7s cubic-bezier(.68,-0.55,.27,1.55), loginCardFloat 4.5s ease-in-out 0.7s infinite;
+        }
+        .login-logo {
+            font-size: 2.7rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 12px #000, 0 0 2px var(--primary-dark);
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .login-title {
+            font-size: 1.15rem;
+            color: #ffd600;
+            margin-bottom: 28px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            opacity: 0.92;
+        }
+        .login-input {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #ffd60055;
+            font-size: 1.1rem;
+            background: rgba(24,24,24,0.97);
+            color: #ffd600;
+            margin-bottom: 18px;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px #ffd60011;
+        }
+        .login-input:focus {
+            border: 1.5px solid #ffd600;
+            box-shadow: 0 2px 16px #ffd60033;
+            background: #111;
+            color: #ffd600;
+        }
+        .login-btn {
+            background: linear-gradient(90deg, #ffd600 60%, #ffab00 100%);
+            color: #181818;
+            border: none;
+            padding: 13px 0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #ffd60033;
+            width: 100%;
+            letter-spacing: 1px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .login-btn:hover {
+            background: linear-gradient(90deg, #ffab00 0%, #ffd600 100%);
+            color: #000;
+            box-shadow: 0 4px 24px #ffd60055;
+        }
+        .login-error {
+            background: #2a1a1a;
+            color: var(--error);
+            margin-top: 12px;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px #ffd60022;
+        }
+        /* YouTube-like Header */
+        .yt-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: var(--card-bg);
+        }
+        .yt-header-left {
+            flex: 1;
+        }
+        .yt-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .yt-header-center {
+            flex: 2;
+            display: flex;
+            align-items: center;
+        }
+        .yt-search {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #222;
+            color: var(--text);
+        }
+        .yt-search-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .yt-header-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .yt-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 16px;
+            font-weight: bold;
+        }
+        .yt-logout {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 1rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        /* YouTube-like video player styles */
+        .yt-player-area {
+            position: relative;
+            background: #181818;
+            border-radius: 16px;
+            box-shadow: 0 4px 32px #000a, 0 2px 8px #000a;
+            overflow: hidden;
+            margin-bottom: 18px;
+            max-width: 100%;
+        }
+        #watchPlayer {
+            width: 100%;
+            background: #000;
+            border-radius: 16px;
+            box-shadow: none;
+            display: block;
+        }
+        .yt-play-overlay {
+            position: absolute;
+            left: 0; top: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.18);
+            cursor: pointer;
+            z-index: 2;
+            transition: background 0.2s;
+        }
+        .yt-play-overlay:hover {
+            background: rgba(0,0,0,0.28);
+        }
+        .yt-play-btn {
+            width: 90px;
+            height: 90px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px #000a;
+        }
+        .yt-play-btn svg {
+            width: 48px;
+            height: 48px;
+            fill: #ffd600;
+            margin-left: 6px;
+        }
+        /* Custom Plyr play overlay for Nebas */
+        .plyr__control--overlaid {
+            background: #ffd600 !important;
+            color: #181818 !important;
+            border-radius: 50% !important;
+            box-shadow: 0 2px 12px #000a;
+            width: 80px !important;
+            height: 80px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.95;
+            transition: background 0.2s, color 0.2s;
+        }
+        .plyr__control--overlaid svg {
+            fill: #181818 !important;
+            width: 44px !important;
+            height: 44px !important;
+            margin-left: 4px;
+        }
+        .plyr__control--overlaid:focus, .plyr__control--overlaid:hover {
+            background: #ffab00 !important;
+            color: #fff !important;
+        }
+    </style>
+    <!-- Plyr CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-bg" id="loginBg">
+        <div class="login-card">
+            <div class="login-logo">Nebas</div>
+            <div class="login-title">Welcome to Nebas!<br>Enter your passkey to access the video platform.</div>
+            <input type="password" id="passkeyInput" class="login-input" placeholder="Passkey">
+            <button class="login-btn" onclick="verifyPasskey()">Login</button>
+            <div id="loginError" class="login-error" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Main Site -->
+    <div id="mainSite" style="display:none;">
+        <!-- YouTube-like Header -->
+        <header class="yt-header">
+            <div class="yt-header-left">
+                <span class="yt-logo">&#9654; Nebas</span>
+            </div>
+            <div class="yt-header-center">
+                <input class="yt-search" type="text" placeholder="Search" disabled>
+                <button class="yt-search-btn" disabled>
+                    <svg height="20" width="20" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" stroke="#ffd600" stroke-width="2" fill="none"/>
+                        <line x1="18" y1="18" x2="22" y2="22" stroke="#ffd600" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="yt-header-right">
+                <div class="yt-avatar">N</div>
+                <button id="logoutBtn" class="yt-logout">Logout</button>
+            </div>
+        </header>
+        <div class="main-content">
+            <button class="upload-btn" onclick="openModal()">Upload Video</button>
+            <div class="video-grid" id="videoGrid">
+                <!-- Videos will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div class="modal" id="uploadModal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Upload Video</h2>
+                <div class="form-group">
+                    <label for="videoTitle">Title</label>
+                    <input type="text" id="videoTitle" placeholder="Enter video title">
+                </div>
+                <div class="form-group">
+                    <label for="videoFile">Video File</label>
+                    <input type="file" id="videoFile" accept="video/*">
+                </div>
+                <div class="form-group">
+                    <label for="thumbnailFile">Thumbnail Image</label>
+                    <input type="file" id="thumbnailFile" accept="image/*">
+                </div>
+                <button class="modal-btn" onclick="uploadVideo()">Upload</button>
+                <div id="message"></div>
+            </div>
+        </div>
+
+        <!-- Video Player Modal -->
+        <div class="modal" id="playerModal">
+            <div class="modal-content" style="max-width:600px;">
+                <span class="close" onclick="closePlayer()">&times;</span>
+                <h2 id="playerTitle" style="color:var(--primary);"></h2>
+                <video id="playerVideo" controls style="width:100%;border-radius:10px;box-shadow:0 2px 8px #000a; margin-top:12px; background:#111;">
+                    <source id="playerSource" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Watch Page (hidden by default) -->
+    <div id="watchPage" style="display:none; min-height: 100vh; background: var(--bg);">
+        <div style="display: flex; max-width: 1300px; margin: 0 auto; padding: 32px 0 0 0; gap: 36px;">
+            <!-- Main Video Player -->
+            <div style="flex: 2; min-width: 0;">
+                <div class="yt-player-area">
+                    <video id="watchPlayer" class="plyr-player" playsinline controls>
+                        <source id="watchSource" src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div style="margin: 18px 0 0 0;">
+                    <div id="watchTitle" style="font-size:1.5rem;font-weight:bold;color:var(--primary);"></div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+                        <div id="watchChannel" class="yt-channel">N</div>
+                        <div>
+                            <div id="watchChannelName" class="yt-channel-name">Nebas Channel</div>
+                            <div id="watchUploadDate" class="yt-upload-date"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Recommended Sidebar -->
+            <div style="flex: 1; min-width: 260px;">
+                <div style="font-size:1.1rem;font-weight:600;color:#ffd600;margin-bottom:12px;">Recommended</div>
+                <div id="recommendedList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plyr JS -->
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <script>
+        // Login logic
+        async function verifyPasskey() {
+            const passkey = document.getElementById('passkeyInput').value;
+            try {
+                const response = await fetch('/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ passkey })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('loginBg').style.display = 'none';
+                    document.getElementById('mainSite').style.display = 'block';
+                    showLogout(true);
+                    loadVideos();
+                } else {
+                    showLoginError('Invalid passkey. Please try again.');
+                }
+            } catch (error) {
+                showLoginError('Error verifying passkey. Please try again.');
+            }
+        }
+        function showLoginError(msg) {
+            const err = document.getElementById('loginError');
+            err.textContent = msg;
+            err.style.display = 'block';
+        }
+
+        // Modal logic
+        function openModal() {
+            document.getElementById('uploadModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            clearForm();
+        }
+        function clearForm() {
+            document.getElementById('videoTitle').value = '';
+            document.getElementById('videoFile').value = '';
+            document.getElementById('thumbnailFile').value = '';
+            showMessage('', '');
+        }
+
+        // Upload logic
+        async function uploadVideo() {
+            const title = document.getElementById('videoTitle').value.trim();
+            const videoInput = document.getElementById('videoFile');
+            const thumbnailInput = document.getElementById('thumbnailFile');
+            const video = videoInput.files[0];
+            const thumbnail = thumbnailInput.files[0];
+
+            if (!title) {
+                showMessage('Please enter a video title.', 'error');
+                return;
+            }
+            if (!video) {
+                showMessage('Please select a video file.', 'error');
+                return;
+            }
+            if (!thumbnail) {
+                showMessage('Please select a thumbnail image.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('video', video);
+            formData.append('thumbnail', thumbnail);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (response.ok) {
+                    showMessage('Video uploaded successfully!', 'success');
+                    setTimeout(() => {
+                        closeModal();
+                        loadVideos();
+                    }, 1200);
+                } else {
+                    showMessage('Error uploading video. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('Error uploading video. Please try again.', 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+        }
+
+        // Video player modal logic
+        function openPlayer(title, videoFile) {
+            document.getElementById('playerTitle').textContent = title;
+            document.getElementById('playerSource').src = `/uploads/${videoFile}`;
+            document.getElementById('playerVideo').load();
+            document.getElementById('playerModal').style.display = 'flex';
+        }
+        function closePlayer() {
+            document.getElementById('playerModal').style.display = 'none';
+            document.getElementById('playerVideo').pause();
+        }
+
+        // Helper to format date
+        function formatDate(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        // Helper to get video duration (async)
+        async function getVideoDuration(url) {
+            return new Promise(resolve => {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.src = url;
+                video.onloadedmetadata = function() {
+                    let s = Math.floor(video.duration % 60).toString().padStart(2, '0');
+                    let m = Math.floor((video.duration / 60) % 60).toString();
+                    let h = Math.floor(video.duration / 3600).toString();
+                    let dur = h > 0 ? `${h}:${m.padStart(2, '0')}:${s}` : `${m}:${s}`;
+                    resolve(dur);
+                };
+                video.onerror = () => resolve('');
+            });
+        }
+        // Show the watch page for a selected video
+        let allVideosCache = [];
+        function showWatchPage(video) {
+            document.getElementById('mainSite').style.display = 'none';
+            document.getElementById('watchPage').style.display = 'block';
+            // Set main video
+            document.getElementById('watchSource').src = `/uploads/${video.video}`;
+            document.getElementById('watchPlayer').load();
+            document.getElementById('watchTitle').textContent = video.title;
+            document.getElementById('watchChannel').textContent = video.title ? video.title[0].toUpperCase() : 'N';
+            document.getElementById('watchChannelName').textContent = 'Nebas Channel';
+            document.getElementById('watchUploadDate').textContent = formatDate(video.uploadedAt);
+            // Recommended videos (exclude current)
+            const recommended = allVideosCache.filter(v => v.video !== video.video);
+            const recList = document.getElementById('recommendedList');
+            recList.innerHTML = '';
+            recommended.forEach(rec => {
+                const recDiv = document.createElement('div');
+                recDiv.className = 'video-card';
+                recDiv.style.display = 'flex';
+                recDiv.style.marginBottom = '18px';
+                recDiv.style.cursor = 'pointer';
+                recDiv.innerHTML = `
+                    <img class="thumbnail" src="/uploads/${rec.thumbnail}" alt="Thumbnail" style="width:120px;height:70px;border-radius:8px;object-fit:cover;">
+                    <div style="margin-left:12px;flex:1;">
+                        <div class="video-title" style="font-size:1rem;line-height:1.2;margin-bottom:4px;">${rec.title}</div>
+                        <div class="yt-channel-name" style="font-size:0.95rem;">Nebas Channel</div>
+                        <div class="yt-upload-date" style="font-size:0.9rem;">${formatDate(rec.uploadedAt)}</div>
+                    </div>
+                `;
+                recDiv.onclick = () => showWatchPage(rec);
+                recList.appendChild(recDiv);
+            });
+            setupPlyr();
+        }
+        // Hide watch page and show main site
+        function hideWatchPage() {
+            document.getElementById('watchPage').style.display = 'none';
+            document.getElementById('mainSite').style.display = 'block';
+        }
+        // Update loadVideos to use showWatchPage
+        async function loadVideos() {
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = '';
+            try {
+                const response = await fetch('/videos');
+                const videos = await response.json();
+                allVideosCache = videos;
+                if (!Array.isArray(videos) || videos.length === 0) {
+                    videoGrid.innerHTML = '<div style="color:#bbb; font-size:1.2rem; text-align:center; grid-column:1/-1;">No videos uploaded yet.</div>';
+                    return;
+                }
+                for (const video of videos) {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    const channelInitial = video.title ? video.title[0].toUpperCase() : 'N';
+                    let duration = '';
+                    try {
+                        duration = await getVideoDuration(`/uploads/${video.video}`);
+                    } catch {}
+                    card.innerHTML = `
+                        <img class="thumbnail" src="/uploads/${video.thumbnail}" alt="Thumbnail">
+                        <span class="yt-duration">${duration}</span>
+                        <div class="video-info">
+                            <div class="yt-channel">${channelInitial}</div>
+                            <div class="yt-meta">
+                                <div class="video-title">${video.title}</div>
+                                <div class="yt-channel-name">Nebas Channel</div>
+                                <div class="yt-upload-date">${formatDate(video.uploadedAt)}</div>
+                            </div>
+                        </div>
+                    `;
+                    card.onclick = () => showWatchPage(video);
+                    videoGrid.appendChild(card);
+                }
+            } catch (e) {
+                videoGrid.innerHTML = '<div style="color:#ff5252; font-size:1.1rem; text-align:center; grid-column:1/-1;">Failed to load videos.</div>';
+            }
+        }
+
+        // Show/hide logout button
+        function showLogout(show) {
+            const btn = document.getElementById('logoutBtn');
+            btn.style.display = show ? 'inline-block' : 'none';
+        }
+
+        // Logout logic
+        function logout() {
+            document.getElementById('mainSite').style.display = 'none';
+            document.getElementById('loginBg').style.display = 'flex';
+            document.getElementById('passkeyInput').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            showLogout(false);
+        }
+        document.getElementById('logoutBtn').onclick = logout;
+
+        // Optional: Hide watch page when clicking logo
+        const logo = document.querySelector('.yt-logo');
+        if (logo) logo.onclick = hideWatchPage;
+
+        // Initialize Plyr for the watch player
+        let plyrInstance = null;
+        function setupPlyr() {
+            if (plyrInstance) {
+                plyrInstance.destroy();
+            }
+            plyrInstance = new Plyr('#watchPlayer', {
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'airplay', 'fullscreen'
+                ],
+                settings: ['quality', 'speed', 'loop'],
+                ratio: '16:9',
+                clickToPlay: true,
+                keyboard: { focused: true, global: true }
+            });
+        }
+    </script>
+</body>
+</html>
