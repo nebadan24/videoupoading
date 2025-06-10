@@ -547,6 +547,14 @@
                 min-width: 90vw;
                 padding: 32px 8vw 28px 8vw;
             }
+            #backToHomeBtn {
+                display: flex !important;
+                position: static !important;
+                margin-right: 8px !important;
+                margin-left: 0 !important;
+                top: auto !important;
+                left: auto !important;
+            }
         }
         @media (min-width: 701px) {
             .yt-header-left {
@@ -562,6 +570,9 @@
                 display: block !important;
                 position: static;
                 margin-left: 0;
+            }
+            #backToHomeBtn {
+                display: none !important;
             }
         }
         @media (max-width: 600px) {
@@ -648,9 +659,12 @@
 
     <!-- Main Site -->
     <div id="mainSite" style="display:none;">
-        <!-- YouTube-like Header -->
+        <!-- YouTube-like Header (now always visible) -->
         <header class="yt-header">
             <div class="yt-header-left" id="headerLeft">
+                <button id="backToHomeBtn" style="display:none;background:rgba(24,24,24,0.85);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #000a;cursor:pointer;z-index:10;transition:background 0.2s;outline:none;margin-right:8px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 19l-7-7 7-7" stroke="#ffd600" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
                 <div class="yt-avatar">N</div>
             </div>
             <div class="yt-header-center">
@@ -705,10 +719,6 @@
     <!-- Watch Page (hidden by default) -->
     <div id="watchPage" style="display:none; min-height: 100vh; background: var(--bg);">
         <div style="display: flex; max-width: 1300px; margin: 0 auto; padding: 32px 0 0 0; gap: 36px; position:relative;">
-            <!-- Back Button -->
-            <button id="backToHomeBtn" style="position:absolute;left:-60px;top:0;background:rgba(24,24,24,0.85);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #000a;cursor:pointer;z-index:10;transition:background 0.2s;outline:none;">
-                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 19l-7-7 7-7" stroke="#ffd600" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
             <!-- Main Video Player -->
             <div style="flex: 2; min-width: 0;">
                 <div class="yt-player-area">
@@ -902,11 +912,13 @@
                 recList.appendChild(recDiv);
             });
             setupPlyr();
+            showBackButton(true);
         }
         // Hide watch page and show main site
         function hideWatchPage() {
             document.getElementById('watchPage').style.display = 'none';
             document.getElementById('mainSite').style.display = 'block';
+            showBackButton(false);
         }
         // Update loadVideos to use showWatchPage
         async function loadVideos() {
@@ -986,6 +998,16 @@
         }
 
         document.getElementById('backToHomeBtn').onclick = hideWatchPage;
+
+        // Show/hide back button in header on mobile when on watch page
+        function showBackButton(show) {
+            const btn = document.getElementById('backToHomeBtn');
+            if (window.innerWidth <= 700 && show) {
+                btn.style.display = 'flex';
+            } else {
+                btn.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>
