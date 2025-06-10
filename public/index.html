@@ -450,6 +450,149 @@
             background: #ffab00 !important;
             color: #fff !important;
         }
+        @media (max-width: 900px) {
+            .main-content {
+                padding: 0 4vw;
+            }
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 24px 0;
+            }
+            .yt-header {
+                flex-direction: column;
+                height: auto;
+                padding: 12px 0 8px 0;
+            }
+            .yt-header-center {
+                width: 100%;
+                margin: 10px 0;
+            }
+            .yt-search {
+                width: 90vw;
+                min-width: 0;
+            }
+            .yt-header-right {
+                margin-top: 8px;
+            }
+        }
+        @media (max-width: 700px) {
+            .main-content {
+                padding: 0 2vw;
+            }
+            .yt-header {
+                flex-direction: column;
+                padding: 8px 0 4px 0;
+            }
+            .yt-logo {
+                font-size: 1.3rem;
+            }
+            .yt-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+            .yt-logout {
+                padding: 6px 12px;
+                font-size: 0.95rem;
+            }
+            .video-card {
+                border-radius: 10px;
+            }
+            .thumbnail {
+                height: 160px;
+            }
+            .video-info {
+                padding: 10px 10px 12px 10px;
+                gap: 8px;
+            }
+            .yt-channel {
+                width: 32px;
+                height: 32px;
+                font-size: 0.95rem;
+            }
+            .video-title {
+                font-size: 1rem;
+            }
+            .yt-channel-name, .yt-upload-date {
+                font-size: 0.9rem;
+            }
+            .yt-player-area {
+                border-radius: 10px;
+            }
+            #watchPlayer {
+                border-radius: 10px;
+            }
+            .login-card {
+                min-width: 90vw;
+                padding: 32px 8vw 28px 8vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .main-content {
+                padding: 0 1vw;
+            }
+            .yt-header {
+                flex-direction: column;
+                padding: 6px 0 2px 0;
+            }
+            .yt-header-center {
+                margin: 6px 0;
+            }
+            .yt-search {
+                width: 80vw;
+                font-size: 0.98rem;
+            }
+            .yt-header-right {
+                gap: 8px;
+            }
+            .video-grid {
+                gap: 16px 0;
+            }
+            .video-card {
+                border-radius: 8px;
+            }
+            .thumbnail {
+                height: 110px;
+            }
+            .yt-player-area {
+                border-radius: 8px;
+            }
+            #watchPlayer {
+                border-radius: 8px;
+            }
+            .login-card {
+                min-width: 98vw;
+                padding: 18px 2vw 18px 2vw;
+            }
+        }
+        @media (max-width: 900px) {
+            #watchPage > div {
+                flex-direction: column !important;
+                gap: 0 !important;
+                padding: 18px 0 0 0 !important;
+            }
+            #backToHomeBtn {
+                left: 8px !important;
+                top: -52px !important;
+            }
+            .yt-player-area {
+                margin-bottom: 10px;
+            }
+            #recommendedList {
+                margin-top: 18px;
+            }
+        }
+        @media (max-width: 600px) {
+            #watchPage > div {
+                padding: 6px 0 0 0 !important;
+            }
+            .yt-player-area {
+                margin-bottom: 6px;
+            }
+            #recommendedList {
+                margin-top: 10px;
+            }
+        }
     </style>
     <!-- Plyr CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
