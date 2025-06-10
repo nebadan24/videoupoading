@@ -662,7 +662,7 @@
         <!-- YouTube-like Header (now always visible) -->
         <header class="yt-header">
             <div class="yt-header-left" id="headerLeft">
-                <button id="backToHomeBtn" style="display:none;background:rgba(24,24,24,0.85);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #000a;cursor:pointer;z-index:10;transition:background 0.2s;outline:none;margin-right:8px;">
+                <button id="backToHomeBtn" style="display:none;background:rgba(24,24,24,0.85);border:none;border-radius:50%;width:44px;height:44px;align-items:center;justify-content:center;box-shadow:0 2px 8px #000a;cursor:pointer;z-index:10;transition:background 0.2s;outline:none;margin-right:8px;">
                     <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 19l-7-7 7-7" stroke="#ffd600" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
                 <div class="yt-avatar">N</div>
@@ -1007,6 +1007,18 @@
             } else {
                 btn.style.display = 'none';
             }
+        }
+
+        // Update showWatchPage and hideWatchPage to toggle back button
+        const oldShowWatchPage = showWatchPage;
+        showWatchPage = function(video) {
+            oldShowWatchPage(video);
+            showBackButton(true);
+        }
+        const oldHideWatchPage = hideWatchPage;
+        hideWatchPage = function() {
+            oldHideWatchPage();
+            showBackButton(false);
         }
     </script>
 </body>
